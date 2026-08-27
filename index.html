@@ -53,12 +53,74 @@
         outline-offset: -6px;
       }
 
+      .featured-video-progress-area {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        padding: 17px 22px 0;
+        color: #94a3b8;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.76rem;
+      }
+
+      .featured-video-progress {
+        width: 100%;
+        height: 20px;
+        margin: 0;
+        cursor: pointer;
+        accent-color: #5eead4;
+      }
+
+      .featured-video-progress:disabled {
+        cursor: wait;
+        opacity: 0.45;
+      }
+
+      .featured-video-progress::-webkit-slider-runnable-track {
+        height: 5px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.26);
+      }
+
+      .featured-video-progress::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+        margin-top: -5.5px;
+        border: 3px solid #0f172a;
+        border-radius: 50%;
+        background: #5eead4;
+        box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.2);
+        -webkit-appearance: none;
+      }
+
+      .featured-video-progress::-moz-range-track {
+        height: 5px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.26);
+      }
+
+      .featured-video-progress::-moz-range-progress {
+        height: 5px;
+        border-radius: 999px;
+        background: #5eead4;
+      }
+
+      .featured-video-progress::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border: 3px solid #0f172a;
+        border-radius: 50%;
+        background: #5eead4;
+        box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.2);
+      }
+
       .featured-video-controls {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 18px;
-        padding: 18px 22px;
+        padding: 14px 22px 18px;
         color: #e2e8f0;
       }
 
@@ -131,9 +193,21 @@
       }
 
       .featured-video-play:focus-visible,
-      .featured-video-speed:focus-visible {
+      .featured-video-speed:focus-visible,
+      .featured-video-progress:focus-visible {
         outline: 3px solid rgba(94, 234, 212, 0.48);
         outline-offset: 2px;
+      }
+
+      .featured-video-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       @media (max-width: 640px) {
@@ -141,10 +215,14 @@
           border-radius: 18px;
         }
 
+        .featured-video-progress-area {
+          padding: 14px 16px 0;
+        }
+
         .featured-video-controls {
           align-items: flex-start;
           flex-direction: column;
-          padding: 16px;
+          padding: 12px 16px 16px;
         }
 
         .featured-video-options {
@@ -204,7 +282,7 @@
         <header class="section-heading">
           <p class="eyebrow">Video</p>
           <h2 id="featured-video-title">See ABot-Recon in action.</h2>
-          <p>Watch the full project video with playback and speed controls.</p>
+          <p>Watch the full project video with playback, seeking, and speed controls.</p>
         </header>
 
         <div class="featured-video-card" id="featured-video-card">
@@ -218,12 +296,28 @@
             ></button>
           </div>
 
+          <div class="featured-video-progress-area">
+            <span id="featured-video-current-time">0:00</span>
+            <input
+              class="featured-video-progress"
+              id="featured-video-progress"
+              type="range"
+              min="0"
+              max="100"
+              step="0.1"
+              value="0"
+              aria-label="Video progress"
+              disabled
+            />
+            <span id="featured-video-duration">0:00</span>
+          </div>
+
           <div class="featured-video-controls">
             <div class="featured-video-status" aria-live="polite">
               <span class="featured-video-status-indicator" aria-hidden="true"></span>
               <div>
                 <strong id="featured-video-state">Ready to play</strong>
-                <span>Playback progress is locked</span>
+                <span>Drag the timeline to seek</span>
               </div>
             </div>
 
@@ -235,7 +329,7 @@
               >Play</button>
 
               <label>
-                <span class="sr-only">Playback speed</span>
+                <span class="featured-video-sr-only">Playback speed</span>
                 <select
                   class="featured-video-speed"
                   id="featured-video-speed"
@@ -327,9 +421,26 @@
         const surfaceButton = document.getElementById("featured-video-toggle");
         const playButton = document.getElementById("featured-video-play");
         const speedSelect = document.getElementById("featured-video-speed");
+        const progressInput = document.getElementById("featured-video-progress");
+        const currentTimeLabel = document.getElementById("featured-video-current-time");
+        const durationLabel = document.getElementById("featured-video-duration");
         const stateLabel = document.getElementById("featured-video-state");
 
         let player = null;
+        let isDraggingProgress = false;
+
+        const formatTime = (value) => {
+          const totalSeconds = Math.max(0, Math.floor(Number(value) || 0));
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+
+          if (hours > 0) {
+            return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+          }
+
+          return `${minutes}:${String(seconds).padStart(2, "0")}`;
+        };
 
         const updateState = (isPlaying) => {
           card.classList.toggle("is-playing", isPlaying);
@@ -341,6 +452,26 @@
           stateLabel.textContent = isPlaying ? "Playing" : "Paused";
         };
 
+        const updateProgress = () => {
+          if (
+            !player ||
+            isDraggingProgress ||
+            typeof player.getDuration !== "function"
+          ) {
+            return;
+          }
+
+          const duration = player.getDuration() || 0;
+          const currentTime = player.getCurrentTime() || 0;
+
+          if (duration > 0) {
+            progressInput.value = String((currentTime / duration) * 100);
+          }
+
+          currentTimeLabel.textContent = formatTime(currentTime);
+          durationLabel.textContent = formatTime(duration);
+        };
+
         const togglePlayback = () => {
           if (!player || typeof player.getPlayerState !== "function") return;
 
@@ -349,6 +480,17 @@
           } else {
             player.playVideo();
           }
+        };
+
+        const seekFromProgress = () => {
+          if (!player || typeof player.seekTo !== "function") return;
+
+          const duration = player.getDuration() || 0;
+          const targetTime = duration * (Number(progressInput.value) / 100);
+
+          player.seekTo(targetTime, true);
+          currentTimeLabel.textContent = formatTime(targetTime);
+          isDraggingProgress = false;
         };
 
         const initializePlayer = () => {
@@ -381,21 +523,26 @@
 
                 const iframe = event.target.getIframe();
                 iframe.setAttribute("tabindex", "-1");
-                iframe.setAttribute(
-                  "title",
-                  "ABot-Recon project video"
-                );
+                iframe.setAttribute("title", "ABot-Recon project video");
 
+                progressInput.disabled = false;
+                durationLabel.textContent = formatTime(
+                  event.target.getDuration()
+                );
                 stateLabel.textContent = "Ready to play";
+                updateProgress();
               },
               onStateChange(event) {
                 updateState(event.data === YT.PlayerState.PLAYING);
 
                 if (event.data === YT.PlayerState.ENDED) {
+                  progressInput.value = "100";
                   stateLabel.textContent = "Video ended";
                 } else if (event.data === YT.PlayerState.BUFFERING) {
                   stateLabel.textContent = "Loading…";
                 }
+
+                updateProgress();
               }
             }
           });
@@ -418,6 +565,29 @@
           if (!player || typeof player.setPlaybackRate !== "function") return;
           player.setPlaybackRate(Number(speedSelect.value));
         });
+
+        progressInput.addEventListener("pointerdown", () => {
+          isDraggingProgress = true;
+        });
+
+        progressInput.addEventListener("input", () => {
+          if (!player || typeof player.getDuration !== "function") return;
+
+          const duration = player.getDuration() || 0;
+          const previewTime =
+            duration * (Number(progressInput.value) / 100);
+
+          currentTimeLabel.textContent = formatTime(previewTime);
+        });
+
+        progressInput.addEventListener("change", seekFromProgress);
+
+        progressInput.addEventListener("pointercancel", () => {
+          isDraggingProgress = false;
+          updateProgress();
+        });
+
+        window.setInterval(updateProgress, 250);
 
         if (window.YT && window.YT.Player) {
           initializePlayer();
