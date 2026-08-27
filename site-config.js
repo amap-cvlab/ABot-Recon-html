@@ -30,7 +30,7 @@ window.SITE_CONFIG = {
     { label: "Code", href: "https://github.com/amap-cvlab/ABot-Recon", icon: "code" },
     { label: "Hugging Face", href: "https://huggingface.co/acvlab/ABot-Recon", icon: "download" },
     { label: "ModelScope", href: "https://modelscope.cn/models/amap_cvlab/ABot-Recon", icon: "download" },
-    { label: "Demos", href: "#demos", icon: "play" },
+    { label: "Online Demo", href: "https://modelscope.cn/studios/amap_cvlab/ABot-Recon", icon: "play" },
   ],
   metrics: [
     { value: "12", label: "frame context" },
