@@ -9,6 +9,154 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css?v=20260827-4" />
+
+    <style>
+      .featured-video-card {
+        max-width: 1120px;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 24px;
+        background:
+          radial-gradient(circle at top left, rgba(62, 193, 177, 0.13), transparent 38%),
+          #0a111b;
+        box-shadow: 0 24px 70px rgba(2, 8, 23, 0.28);
+      }
+
+      .featured-video-frame {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: #020617;
+      }
+
+      .featured-video-frame iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        pointer-events: none;
+      }
+
+      .featured-video-toggle {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .featured-video-toggle:focus-visible {
+        outline: 3px solid #5eead4;
+        outline-offset: -6px;
+      }
+
+      .featured-video-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 18px 22px;
+        color: #e2e8f0;
+      }
+
+      .featured-video-status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .featured-video-status-indicator {
+        width: 9px;
+        height: 9px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: #94a3b8;
+        box-shadow: 0 0 0 5px rgba(148, 163, 184, 0.12);
+      }
+
+      .featured-video-card.is-playing .featured-video-status-indicator {
+        background: #5eead4;
+        box-shadow: 0 0 0 5px rgba(94, 234, 212, 0.13);
+      }
+
+      .featured-video-status strong {
+        display: block;
+        color: #f8fafc;
+        font-size: 0.95rem;
+      }
+
+      .featured-video-status span {
+        display: block;
+        margin-top: 2px;
+        color: #94a3b8;
+        font-size: 0.78rem;
+      }
+
+      .featured-video-options {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 0 0 auto;
+      }
+
+      .featured-video-play,
+      .featured-video-speed {
+        min-height: 42px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 12px;
+        color: #f8fafc;
+        background: rgba(30, 41, 59, 0.86);
+        font: inherit;
+      }
+
+      .featured-video-play {
+        min-width: 104px;
+        padding: 0 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .featured-video-play:hover {
+        border-color: rgba(94, 234, 212, 0.65);
+        background: rgba(15, 118, 110, 0.32);
+      }
+
+      .featured-video-speed {
+        padding: 0 34px 0 13px;
+        cursor: pointer;
+      }
+
+      .featured-video-play:focus-visible,
+      .featured-video-speed:focus-visible {
+        outline: 3px solid rgba(94, 234, 212, 0.48);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 640px) {
+        .featured-video-card {
+          border-radius: 18px;
+        }
+
+        .featured-video-controls {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 16px;
+        }
+
+        .featured-video-options {
+          width: 100%;
+        }
+
+        .featured-video-play,
+        .featured-video-speed {
+          flex: 1;
+        }
+      }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -50,6 +198,62 @@
           <dl class="hero-metrics" id="hero-metrics"></dl>
         </div>
         <a class="scroll-cue" href="#demos">Watch the demos <span aria-hidden="true">↓</span></a>
+      </section>
+
+      <section class="section featured-video" aria-labelledby="featured-video-title">
+        <header class="section-heading">
+          <p class="eyebrow">Video</p>
+          <h2 id="featured-video-title">See ABot-Recon in action.</h2>
+          <p>Watch the full project video with playback and speed controls.</p>
+        </header>
+
+        <div class="featured-video-card" id="featured-video-card">
+          <div class="featured-video-frame">
+            <div id="featured-youtube-player"></div>
+            <button
+              class="featured-video-toggle"
+              id="featured-video-toggle"
+              type="button"
+              aria-label="Play video"
+            ></button>
+          </div>
+
+          <div class="featured-video-controls">
+            <div class="featured-video-status" aria-live="polite">
+              <span class="featured-video-status-indicator" aria-hidden="true"></span>
+              <div>
+                <strong id="featured-video-state">Ready to play</strong>
+                <span>Playback progress is locked</span>
+              </div>
+            </div>
+
+            <div class="featured-video-options">
+              <button
+                class="featured-video-play"
+                id="featured-video-play"
+                type="button"
+              >Play</button>
+
+              <label>
+                <span class="sr-only">Playback speed</span>
+                <select
+                  class="featured-video-speed"
+                  id="featured-video-speed"
+                  aria-label="Playback speed"
+                >
+                  <option value="0.25">0.25×</option>
+                  <option value="0.5">0.5×</option>
+                  <option value="0.75">0.75×</option>
+                  <option value="1" selected>1×</option>
+                  <option value="1.25">1.25×</option>
+                  <option value="1.5">1.5×</option>
+                  <option value="1.75">1.75×</option>
+                  <option value="2">2×</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="section demos" id="demos">
@@ -115,5 +319,118 @@
 
     <script src="site-config.js?v=20260827-5"></script>
     <script src="app.js?v=20260824-3"></script>
+
+    <script>
+      (() => {
+        const videoId = "06OM-4oCw3s";
+        const card = document.getElementById("featured-video-card");
+        const surfaceButton = document.getElementById("featured-video-toggle");
+        const playButton = document.getElementById("featured-video-play");
+        const speedSelect = document.getElementById("featured-video-speed");
+        const stateLabel = document.getElementById("featured-video-state");
+
+        let player = null;
+
+        const updateState = (isPlaying) => {
+          card.classList.toggle("is-playing", isPlaying);
+          playButton.textContent = isPlaying ? "Pause" : "Play";
+          surfaceButton.setAttribute(
+            "aria-label",
+            isPlaying ? "Pause video" : "Play video"
+          );
+          stateLabel.textContent = isPlaying ? "Playing" : "Paused";
+        };
+
+        const togglePlayback = () => {
+          if (!player || typeof player.getPlayerState !== "function") return;
+
+          if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+          } else {
+            player.playVideo();
+          }
+        };
+
+        const initializePlayer = () => {
+          if (player || !window.YT || !window.YT.Player) return;
+
+          player = new YT.Player("featured-youtube-player", {
+            videoId,
+            width: "100%",
+            height: "100%",
+            playerVars: {
+              autoplay: 0,
+              controls: 0,
+              disablekb: 1,
+              fs: 0,
+              iv_load_policy: 3,
+              modestbranding: 1,
+              playsinline: 1,
+              rel: 0
+            },
+            events: {
+              onReady(event) {
+                event.target.setPlaybackRate(Number(speedSelect.value));
+
+                const availableRates = event.target.getAvailablePlaybackRates();
+                Array.from(speedSelect.options).forEach((option) => {
+                  option.disabled = !availableRates.includes(
+                    Number(option.value)
+                  );
+                });
+
+                const iframe = event.target.getIframe();
+                iframe.setAttribute("tabindex", "-1");
+                iframe.setAttribute(
+                  "title",
+                  "ABot-Recon project video"
+                );
+
+                stateLabel.textContent = "Ready to play";
+              },
+              onStateChange(event) {
+                updateState(event.data === YT.PlayerState.PLAYING);
+
+                if (event.data === YT.PlayerState.ENDED) {
+                  stateLabel.textContent = "Video ended";
+                } else if (event.data === YT.PlayerState.BUFFERING) {
+                  stateLabel.textContent = "Loading…";
+                }
+              }
+            }
+          });
+        };
+
+        const previousYouTubeReady = window.onYouTubeIframeAPIReady;
+
+        window.onYouTubeIframeAPIReady = () => {
+          if (typeof previousYouTubeReady === "function") {
+            previousYouTubeReady();
+          }
+
+          initializePlayer();
+        };
+
+        playButton.addEventListener("click", togglePlayback);
+        surfaceButton.addEventListener("click", togglePlayback);
+
+        speedSelect.addEventListener("change", () => {
+          if (!player || typeof player.setPlaybackRate !== "function") return;
+          player.setPlaybackRate(Number(speedSelect.value));
+        });
+
+        if (window.YT && window.YT.Player) {
+          initializePlayer();
+        } else if (
+          !document.querySelector(
+            'script[src="https://www.youtube.com/iframe_api"]'
+          )
+        ) {
+          const apiScript = document.createElement("script");
+          apiScript.src = "https://www.youtube.com/iframe_api";
+          document.head.appendChild(apiScript);
+        }
+      })();
+    </script>
   </body>
 </html>
