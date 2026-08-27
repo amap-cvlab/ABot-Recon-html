@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ABot-Recon project page" />
+    <title>ABot-Recon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=20260827-4" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="ABot-Recon home">
+        <img class="brand-mark" src="assets/images/amap-cvlab-logo.png?v=20260826-6" alt="" />
+        <span>AMAP CVLab <b>/</b> ABot-Recon</span>
+      </a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" aria-label="Primary navigation">
+        <a href="#demos">Demos</a>
+        <a href="#overview">Overview</a>
+        <a href="#results">Results</a>
+        <a href="#citation">BibTeX</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <img class="hero-video" src="assets/images/overview.png" alt="" />
+        <div class="hero-shade"></div>
+        <div class="hero-content">
+          <p class="kicker">Streaming Spatial Intelligence</p>
+          <h1><span data-config="shortTitle">ABot-Recon</span></h1>
+          <p class="paper-title" data-config="paperTitle">Revisiting Local Context for Long-Horizon Streaming 3D Reconstruction</p>
+          <p class="hero-tagline" data-config="tagline">Stable streaming 3D reconstruction for ultra-long sequences using a fixed 12-frame local context.</p>
+          <div class="authors" data-config="authors">Author list will be populated from the paper.</div>
+          <div class="hero-actions" id="hero-actions"></div>
+          <dl class="hero-metrics" id="hero-metrics"></dl>
+        </div>
+        <a class="scroll-cue" href="#demos">Watch the demos <span aria-hidden="true">↓</span></a>
+      </section>
+
+      <section class="section demos" id="demos">
+        <header class="section-heading">
+          <p class="eyebrow">Demonstrations</p>
+          <h2>Long streams, reconstructed as they unfold.</h2>
+          <p>Four representative settings, from vehicle-scale routes to low-viewpoint embodied navigation.</p>
+        </header>
+        <div class="scene-gallery" id="scene-gallery">
+          <div class="scene-stage">
+            <video id="scene-video" controls muted loop playsinline preload="metadata"></video>
+            <div class="scene-video-placeholder" id="scene-video-placeholder"></div>
+            <button class="demo-nav demo-prev" id="demo-prev" type="button" aria-label="Play previous demo" title="Previous demo"><span>‹</span></button>
+            <button class="demo-nav demo-next" id="demo-next" type="button" aria-label="Play next demo" title="Next demo"><span>›</span></button>
+          </div>
+          <div class="scene-selector" id="scene-selector" role="tablist" aria-label="Demo scenes"></div>
+        </div>
+      </section>
+
+      <section class="section overview" id="overview">
+        <header class="section-heading">
+          <p class="eyebrow">Overview</p>
+          <h2>Long-horizon reconstruction from strictly local context.</h2>
+          <p data-config="abstract">ABot-Recon incrementally estimates camera motion and reconstructs local geometry from a continuous image stream.</p>
+        </header>
+        <!-- Extracted from Figure 3 of ABot_Recon.pdf. Replace only if the paper figure changes. -->
+        <button class="figure-button pipeline-figure" type="button" data-lightbox="assets/images/pipeline-paper.png?v=20260827-1" aria-label="Open pipeline figure">
+          <img src="assets/images/pipeline-paper.png?v=20260827-1" alt="ABot-Recon fixed-context causal reconstruction pipeline" />
+        </button>
+        <div class="capability-strip" id="capabilities"></div>
+      </section>
+
+      <section class="section results" id="results">
+        <header class="section-heading">
+          <p class="eyebrow">Results</p>
+          <h2>Accurate over long spatial and temporal horizons.</h2>
+          <p>Aligned trajectory comparisons on driving, campus, and quadruped-robot sequences, followed by the full quantitative evaluation.</p>
+        </header>
+        <div class="performance-chart" id="performance-chart" aria-label="Oxford pose accuracy and KITTI-02 streaming efficiency"></div>
+        <div class="dataset-results" id="dataset-results"></div>
+      </section>
+
+      <section class="section citation" id="citation">
+        <header class="section-heading">
+          <p class="eyebrow">Citation</p>
+          <h2>Build on ABot-Recon.</h2>
+        </header>
+        <div class="citation-box">
+          <pre><code id="bibtex"></code></pre>
+          <button class="copy-button" id="copy-bibtex" type="button">Copy BibTeX</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>ABot-Recon · AMAP CVLab</span>
+      <span>Static project page · GitHub Pages ready</span>
+    </footer>
+
+    <dialog class="lightbox" id="lightbox">
+      <button type="button" class="lightbox-close" aria-label="Close image">×</button>
+      <img alt="Expanded project figure" />
+    </dialog>
+
+    <script src="site-config.js?v=20260827-5"></script>
+    <script src="app.js?v=20260824-3"></script>
+  </body>
+</html>
