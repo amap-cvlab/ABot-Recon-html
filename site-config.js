@@ -26,7 +26,7 @@ window.SITE_CONFIG = {
   abstract:
     "ABot-Recon solves a fixed local reconstruction problem using the current frame and an 11-frame KV cache. It predicts local geometry and adjacent motion, then composes both into a stable global reconstruction.",
   links: [
-    { label: "Tech Report", href: "https://github.com/amap-cvlab/ABot-Recon/blob/main/ABot-Recon-Tech-Report.pdf", icon: "file" },
+    { label: "Tech Report", href: "https://arxiv.org/abs/2608.27529", icon: "file" },
     { label: "Code", href: "https://github.com/amap-cvlab/ABot-Recon", icon: "code" },
     { label: "Hugging Face", href: "https://huggingface.co/acvlab/ABot-Recon", icon: "download" },
     { label: "ModelScope", href: "https://modelscope.cn/models/amap_cvlab/ABot-Recon", icon: "download" },
